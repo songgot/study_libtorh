@@ -78,11 +78,11 @@ torch.save({
     'optimizer': optimizer.state_dict()}, 'all.tar')  # store various values and save progress during learning.
 ```
 #### troch.load(path)
-Used when loading the entire model or the state_dict of the model.
+Used when loading the entire model or the state_dict of the model, class declaration required.
 path: Location to load + file name
 
 ```
-model = torch.load('model.pt')  # Load the entire model as a whole, class declaration required
+model = torch.load('model.pt')  # Load the entire model as a whole.
 ```
 or
 #### torch.nn.Module.load_state_dict(dict)
@@ -92,8 +92,9 @@ Using state_dict, initialize parameter values in the model object, class declara
 model.load_state_dict(torch.load('model_state_dict.pt'))  # After loading state_dict, save it to model
 ```
 or
+Class declaration required
 ```
-checkpoint = torch.load(PATH + 'all.tar')   # load all.tar, class declaration required
+checkpoint = torch.load(PATH + 'all.tar')   # load all.tar.
 model.load_state_dict(checkpoint['model'])
 optimizer.load_state_dict(checkpoint['optimizer'])
 ```
