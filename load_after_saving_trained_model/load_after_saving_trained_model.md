@@ -82,23 +82,26 @@ Used when loading the entire model or the state_dict of the model.
 path: Location to load + file name
 
 ```
-model = torch.load(PATH + 'model.pt')  # Load the entire model as a whole, class declaration required
+model = torch.load('model.pt')  # Load the entire model as a whole, class declaration required
 ```
 or
 #### torch.nn.Module.load_state_dict(dict)
-Using state_dict, initialize parameter values in the model object.
+Using state_dict, initialize parameter values in the model object, class declaration required
 * dict: state_dict object containing the parameter values to be loaded.
 ```
-model.load_state_dict(torch.load(PATH + 'model_state_dict.pt'))  # After loading state_dict, save it to model
+model.load_state_dict(torch.load('model_state_dict.pt'))  # After loading state_dict, save it to model
 ```
 or
 ```
-checkpoint = torch.load(PATH + 'all.tar')   # load all.tar
+checkpoint = torch.load(PATH + 'all.tar')   # load all.tar, class declaration required
 model.load_state_dict(checkpoint['model'])
 optimizer.load_state_dict(checkpoint['optimizer'])
 ```
 #### re-training with x_data and y_data
 ```
+criterion = torch.nn.CrossEntropyLoss() #손실함수
+optimizer = torch.optim.SGD(model.parameters(), lr=0.01)
+
 for epoch in range(1000):
     output = model(x_data)
 
