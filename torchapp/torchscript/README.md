@@ -19,8 +19,8 @@ Before proceeding with libtorch, we must first learn Python as mentioned above, 
 
 # Convert your PyTorch model to TorchScript through tracing,
 # An instance of the implemented model must be passed to the torch.jit.trace function along with example input values.
-#Then, this function then creates a torch.jit.ScriptModule object.
-#The object created in this way will contain the results of the runtime trace when the model is executed in the module's forward method
+# Then, this function creates a torch.jit.ScriptModule object.
+# The object created in this way will contain the results of the runtime trace when the model is executed in the module's forward method
 
 import torch
 import torchvision
