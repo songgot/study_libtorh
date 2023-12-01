@@ -58,19 +58,21 @@ class DNN(nn.Module):
 # Create model instance
 model = DNN()
 
+# I think there is no need to declare (criterion and optimizer)
 criterion = torch.nn.CrossEntropyLoss()
 optimizer = torch.optim.SGD(model.parameters(), lr=0.01)
 
-for epoch in range(1000):
-    output = model(x_data)
-
-    loss = criterion(output, y_data)
-
-    optimizer.zero_grad()
-    loss.backward()
-    optimizer.step()
-
-    print("progress:", epoch, "loss=", loss.item())
+# It seems like we don’t have to train.
+# for epoch in range(1000):
+#    output = model(x_data)
+#
+#    loss = criterion(output, y_data)
+#
+#    optimizer.zero_grad()
+#    loss.backward()
+#    optimizer.step()
+#
+#    print("progress:", epoch, "loss=", loss.item())
 
 # Input value typically passed to the model’s forward() method
 example = torch.bernoulli(torch.full((6, 2), 0.5)) 
