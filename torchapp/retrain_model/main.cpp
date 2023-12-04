@@ -78,14 +78,17 @@ int main(int argc, const char* argv[]) {
 			input.push_back(x_data.index({i}));
 
 			at::Tensor output = module.forward(input).toTensor();
-			//std::cout << "output:"<< output << std::endl;
+			std::cout << "output:"<< output << std::endl;
 
 			at::Tensor target = y_data.index({i}).data();
 			//std::cout << "target:"<< target << std::endl;
 			
 			/** https://discuss.pytorch.org/t/c-loss-functions/27471 */
 			/** dim = -1 => error : Dimension out of range (expected to be in range of [-1, 0], but got 1) */
-			auto loss = torch::nll_loss(torch::log_softmax(output, /*dim=*/-1), target); //손실값 계산
+			//F.cross_entropy()는 F.log_softmax()와 F.nll_loss()를 포함하고 있습니다.
+			//F.cross_entropy는 비용 함수에 소프트맥스 함수까지 포함하고 있음을 기억하고 있어야 구현 시 혼동하지 않습니다.
+			//여기서 nll이란 Negative Log Likelihood의 약자입니다. 위에서 nll_loss는 F.log_softmax()를 수행한 후에 남은 수식들을 수행합니다.
+			auto loss = torch::nll_loss(torch::log_softmax(output, /*dim=*/-1), target); //손실값 계산 => 이상한 것 같음 
 			//std::cout << "loss:"<< loss << std::endl;
 			optimizer.zero_grad(); //기울기 초기화
 			loss.backward(); //역전파 수행
@@ -95,4 +98,6 @@ int main(int argc, const char* argv[]) {
 			}
 		}
 	}
+
+	module.save("model.pt");
 }
