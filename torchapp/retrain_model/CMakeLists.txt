@@ -6,6 +6,9 @@ find_package(Torch REQUIRED)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS}")
 
 add_executable(${NAME} main.cpp)
+add_executable(classify classify.cpp)
+
 target_link_libraries(${NAME} "${TORCH_LIBRARIES}")
 set_property(TARGET ${NAME} PROPERTY CXX_STANDARD 17)
-
+target_link_libraries(classify "${TORCH_LIBRARIES}")
+set_property(TARGET classify PROPERTY CXX_STANDARD 17)

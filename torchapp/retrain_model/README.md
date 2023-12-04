@@ -179,6 +179,8 @@ int main(int argc, const char* argv[]) {
 			}
 		}
 	}
+	/** Save */
+	module.save("model.pt");
 }
 ```
 ### Create CMakeLists.txt
@@ -229,4 +231,96 @@ progress: 8 loss:0.172066
 progress: 9 loss:0.169789
 ...
 
+```
+
+### classification by model.pt
+Now, let’s classify using the saved model.pt file.
+[classify.cpp]
+```
+#include <torch/torch.h>
+#include <torch/script.h> // 필요한 단 하나의 헤더파일.
+#include <iostream>
+#include <memory>
+
+int main(int argc, const char* argv[]) {
+
+	auto x_data = torch::tensor({{0, 0}, {1, 0}, {1, 1}, {0, 0}, {0, 0}, {0, 1}}, torch::kF32);
+
+	if (argc !=2) {
+		std::cerr << "usage: classify <path-to-exported-script-module>\n";
+		return -1;
+	}
+
+	torch::jit::script::Module module;
+	try {
+		/**
+		 * torch::jit::load()을 사용해 ScriptModule을 파일로부터 역직렬화
+		 */
+		module = torch::jit::load(argv[1]);
+	}
+	catch (const c10::Error& e) {
+
+		std::cerr << "error loading the model\n";
+		return -1;
+	}
+    for (int i = 0; i < x_data.size(0); i++) {
+        std::vector<torch::jit::IValue> input;
+        //inputs.push_back(torch::ones({1, 2}));
+        input.push_back(x_data.index({i}));
+
+        at::Tensor output = module.forward(input).toTensor();
+        //std::cout << "output:"<< output << std::endl;
+        auto max_val = output.flatten().max().item();  
+        int max_idx = output.argmax().item().toInt();  
+        std::cout << "output["<< max_idx <<"]: " << max_val << std::endl;
+    }
+}
+```
+Let's modify CMakeLists.txt
+```
+cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
+set(NAME retrain_model)
+project(${NAME})
+
+find_package(Torch REQUIRED)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS}")
+
+add_executable(${NAME} main.cpp)
+add_executable(classify classify.cpp)
+
+target_link_libraries(${NAME} "${TORCH_LIBRARIES}")
+set_property(TARGET ${NAME} PROPERTY CXX_STANDARD 17)
+
+target_link_libraries(classify "${TORCH_LIBRARIES}")
+set_property(TARGET classify PROPERTY CXX_STANDARD 17)
+```
+### How to run
+```
+cd build
+./classify ./model.pt
+output[0]: 4.25023
+output[1]: 3.44921
+output[2]: 5.38102
+output[0]: 4.25023
+output[0]: 4.25023
+output[2]: 3.84064
+```
+The labels according to the input values are as follows.
+```
+x_data = torch.Tensor([
+    [0,0],
+    [1,0],
+    [1,1],
+    [0,0],
+    [0,0],
+    [0,1]
+])
+y_data = torch.LongTensor([
+    0, # etc
+    1, # mammal
+    2, # birds
+    0,
+    0,
+    2
+])
 ```
